@@ -13734,12 +13734,12 @@ out = output[:, -1]</code></pre>
         <span class="nb">super</span><span class="p">(</span><span class="n">RNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="c1"># TODO: Implement function</span>
         
-        <span class="c1"># set class variables</span>
+        <span class="c1"># assign class variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span> <span class="o">=</span> <span class="n">output_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="n">n_layers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
         
-        <span class="c1"># define model layers</span>
+        <span class="c1"># model layers definition</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span>
             <span class="n">embedding_dim</span><span class="p">,</span>
@@ -13765,15 +13765,13 @@ out = output[:, -1]</code></pre>
         <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">nn_input</span><span class="p">)</span>
         <span class="n">lstm_out</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
         
-        <span class="c1"># stack up lstm outputs</span>
+        <span class="c1"># flattened up lstm outputs</span>
         <span class="n">lstm_out</span> <span class="o">=</span> <span class="n">lstm_out</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
         
         <span class="c1"># fully-connected layer</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">lstm_out</span><span class="p">)</span>
-        
-        <span class="c1"># reshape to be (batch_size, seq_length, output_size)</span>
+    
         <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_size</span><span class="p">)</span>
-        <span class="c1"># get last batch</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         
         <span class="c1"># return one batch of output word scores and the hidden state</span>
@@ -13788,7 +13786,7 @@ out = output[:, -1]</code></pre>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Implement function</span>
         
-        <span class="c1"># initialize hidden state with zero weights, and move to GPU if available</span>
+        <span class="c1"># initialize hidden state and zero weights, and move them GPU if available</span>
         <span class="n">weight</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">data</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">train_on_gpu</span><span class="p">):</span>
             <span class="n">hidden</span> <span class="o">=</span> <span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_layers</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span>
@@ -13864,25 +13862,23 @@ out = output[:, -1]</code></pre>
         <span class="n">inp</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
     <span class="c1"># perform backpropagation and optimization</span>
     <span class="n">hidden_state</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">each</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">hidden</span><span class="p">])</span>
-    <span class="c1"># return the loss over a batch and the hidden state produced by our model</span>
      <span class="c1"># zero accumulated gradients</span>
     <span class="n">rnn</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
     
-    <span class="c1"># get the output from the model</span>
+    <span class="c1"># get model output</span>
     <span class="n">output</span><span class="p">,</span> <span class="n">hidden_state</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">hidden_state</span><span class="p">)</span>
     
-    <span class="c1"># calculate the loss</span>
+    <span class="c1"># calculate the loss function</span>
     <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
     
     <span class="c1"># perform backpropagation and optimization</span>
     <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 
-    <span class="n">clip</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># gradient clipping</span>
-    <span class="c1"># `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.</span>
+    <span class="n">clip</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">rnn</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">clip</span><span class="p">)</span>
     <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
     
-    <span class="c1"># return the loss over a batch and the hidden state produced by our model</span>
+    <span class="c1"># return the loss over a batch and the hidden state produced by the model</span>
     <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">hidden_state</span>
 
 <span class="c1"># Note that these tests aren&#39;t completely extensive.</span>
@@ -13952,9 +13948,9 @@ out = output[:, -1]</code></pre>
             <span class="k">if</span><span class="p">(</span><span class="n">batch_i</span> <span class="o">&gt;</span> <span class="n">n_batches</span><span class="p">):</span>
                 <span class="k">break</span>
             
-            <span class="c1"># forward, back prop</span>
+            <span class="c1"># forward, back propagation</span>
             <span class="n">loss</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">forward_back_prop</span><span class="p">(</span><span class="n">rnn</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>          
-            <span class="c1"># record loss</span>
+            <span class="c1"># record training loss</span>
             <span class="n">batch_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
 
             <span class="c1"># printing loss stats</span>
@@ -14620,7 +14616,7 @@ Epoch:   15/15    Loss: 3.260785879611969
         <span class="c1"># get the next word probabilities</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
         <span class="k">if</span><span class="p">(</span><span class="n">train_on_gpu</span><span class="p">):</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span> <span class="c1"># move to cpu</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span> <span class="c1"># move to cpu </span>
          
         <span class="c1"># use top_k sampling to get the index of the next word</span>
         <span class="n">top_k</span> <span class="o">=</span> <span class="mi">5</span>
